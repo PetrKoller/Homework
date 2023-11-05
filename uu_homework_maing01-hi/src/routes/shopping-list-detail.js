@@ -3,6 +3,9 @@ import { createVisualComponent, Utils, Content } from "uu5g05";
 import Config from "./config/config.js";
 import RouteBar from "../core/route-bar";
 import {ActionGroup, Box, ListItem} from "uu5g05-elements";
+import ItemsList from "../bricks/shopping-list/items-list";
+import {shoppingListDetail} from "../fakeData/fakeData"
+import {Form, FormText, SubmitButton} from "uu5g05-forms";
 //@@viewOff:imports
 
 //@@viewOn:constants
@@ -40,34 +43,19 @@ const ShoppingListDetail = createVisualComponent({
     //@@viewOff:interface
 
     //@@viewOn:render
-    const itemList = [
-      {
-        icon: "uugds-reload",
-        collapsedChildren: "Update",
-        itemList: [
-          { children: "Update Name", onClick: () => alert("update name") },
-          { children: "Update Surname", onClick: () => alert("update surname") },
-        ],
-      },
-      { icon: "uugds-plus", children: "Create", onClick: () => alert("create") },
-      {
-        icon: "uugds-delete",
-        children: "Move to trash",
-        onLabelClick: () => alert("move to trash"),
-        itemList: [
-          { children: "Delete permanently", colorScheme: "negative", onClick: () => alert("delete permanently") },
-        ],
-      },
-      { divider: true },
-      { icon: "uugds-settings", children: "Settings", onClick: () => alert("settings"), iconNotification: true },
-    ];
+
 
     return (
-      <div className={Config.Css.css`display: flex;`}>
-        <ListItem actionList={itemList} >
-          <div>Karel</div>
-        </ListItem>
-      </div>
+        <>
+            <RouteBar/>
+            <Form>
+                <div style={{display: "flex", justifyContent: "center"}}>
+                    <FormText name="newItem" placeholder="New item"/>
+                    <SubmitButton>Add new item</SubmitButton>
+                </div>
+            </Form>
+          <ItemsList data={shoppingListDetail.items}/>
+        </>
     );
     //@@viewOff:render
   },
