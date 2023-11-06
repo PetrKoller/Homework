@@ -11,13 +11,11 @@ const shoppingListDetail = {
       {
         id: 1,
         name: "Milk",
-        count: 2,
         completed: false
       },
     {
       id: 2,
       name: "Bread",
-      count: 2,
       completed: true
     }
   ]

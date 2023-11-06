@@ -4,6 +4,7 @@ import Config from "./config/config.js";
 import {Box, Grid, ListItem} from "uu5g05-elements";
 import RouteBar from "../../core/route-bar";
 import ShoppingListItem from "./shopping-list-item";
+import {Form, FormText, SubmitButton} from "uu5g05-forms";
 //@@viewOff:imports
 
 //@@viewOn:constants
@@ -25,16 +26,7 @@ const ItemsList = createVisualComponent({
   //@@viewOff:statics
 
   //@@viewOn:propTypes
-  propTypes: {
-    data: PropTypes.arrayOf([
-      {
-        id: PropTypes.string.isRequired,
-        name: PropTypes.string.isRequired,
-        count: PropTypes.number.isRequired,
-        completed: PropTypes.bool.isRequired,
-      },
-    ]),
-  },
+  propTypes: {},
   //@@viewOff:propTypes
 
   //@@viewOn:defaultProps
@@ -43,12 +35,6 @@ const ItemsList = createVisualComponent({
 
   render(props) {
     //@@viewOn:private
-    const [shoppingList, setShoppingList] = useState(props.data);
-    const { children } = props;
-
-    const handleDelete = (id) => {
-      setShoppingList(prev => prev.filter(item => item.id !== id))
-    }
     //@@viewOff:private
 
     //@@viewOn:interface
@@ -56,13 +42,16 @@ const ItemsList = createVisualComponent({
 
     //@@viewOn:render
       return (
-          <Grid>
+            <Grid>
               {
-                shoppingList.map(item => {
-                    return <ShoppingListItem key={item.id} onDelete={handleDelete} item={item}/>
+                props.data.map(item => {
+                  if(!props.displayChecked && item.completed){
+                      return;
+                  }
+                  return <ShoppingListItem onChecked={props.onItemChecked} key={item.id} onDelete={props.onItemDelete} item={item}/>
                 })
               }
-          </Grid>
+            </Grid>
       )
     //@@viewOff:render
   },

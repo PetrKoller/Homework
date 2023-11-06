@@ -35,17 +35,14 @@ const ShoppingListItem = createVisualComponent({
 
   render(props) {
     //@@viewOn:private
-    const { children } = props;
-    const [checked, setChecked] = useState(false);
     const actions = [
       {
         icon: "uugds-delete",
         onClick: () => props.onDelete(props.item.id),
-        disabled: checked,
       },
       {
-        icon: checked ? "uugds-close" : "uugds-check",
-        onClick: () => setChecked(prev => !prev),
+        icon: props.item.completed ? "uugds-close" : "uugds-check",
+        onClick: () => props.onChecked(props.item.id),
       },
     ];
     //@@viewOff:private
@@ -55,7 +52,7 @@ const ShoppingListItem = createVisualComponent({
 
     //@@viewOn:render
     return <Grid.Item>
-      <ListItem actionList={actions} className={Config.Css.css(`margin: 0.1rem 1rem;padding: 1rem 1rem;${checked ? "text-decoration: line-through;" : ""}`)}>{props.item.name}</ListItem>
+      <ListItem actionList={actions} className={Config.Css.css(`margin: 0.1rem 1rem;padding: 1rem 1rem;${props.item.completed ? "text-decoration: line-through;" : ""}`)}>{props.item.name}</ListItem>
     </Grid.Item>
     //@@viewOff:render
   },
