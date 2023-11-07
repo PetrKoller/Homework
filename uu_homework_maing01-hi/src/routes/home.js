@@ -3,7 +3,6 @@ import { Utils, createVisualComponent, useSession, Lsi } from "uu5g05";
 import Uu5Elements from "uu5g05-elements";
 import Plus4U5Elements from "uu_plus4u5g02-elements";
 import { withRoute } from "uu_plus4u5g02-app";
-import {authUser} from "../fakeData/fakeData";
 import Config from "./config/config.js";
 import WelcomeRow from "../bricks/welcome-row.js";
 import RouteBar from "../core/route-bar.js";
@@ -41,7 +40,7 @@ let Home = createVisualComponent({
 
   render(props) {
     //@@viewOn:private
-    const identity = authUser;
+    const identity = {};
     //@@viewOff:private
 
     //@@viewOn:interface

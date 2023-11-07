@@ -6,6 +6,7 @@ import Plus4U5App from "uu_plus4u5g02-app";
 
 import Config from "./config/config.js";
 import Home from "../routes/home.js";
+import UserProvider from "../bricks/users/user-provider";
 //@@viewOff:imports
 
 //@@viewOn:constants
@@ -15,9 +16,8 @@ const ControlPanel = Utils.Component.lazy(() => import("../routes/control-panel.
 const ShoppingListDetail = Utils.Component.lazy(() => import("../routes/shopping-list-detail.js"));
 
 const ROUTE_MAP = {
-  "": { redirect: "home" },
+  "": { redirect: "shoppingListDetail" },
   home: (props) => <Home {...props} />,
-  about: (props) => <About {...props} />,
   "sys/uuAppWorkspace/initUve": (props) => <InitAppWorkspace {...props} />,
   controlPanel: (props) => <ControlPanel {...props} />,
   shoppingListDetail: (props) => <ShoppingListDetail {...props} />,
@@ -58,9 +58,11 @@ const Spa = createVisualComponent({
     //@@viewOn:render
     return (
       <Plus4U5.SpaProvider initialLanguageList={["en", "cs"]}>
-        <Uu5Elements.ModalBus>
-          <Plus4U5App.Spa routeMap={ROUTE_MAP} />
-        </Uu5Elements.ModalBus>
+        <UserProvider>
+          <Uu5Elements.ModalBus>
+            <Plus4U5App.Spa routeMap={ROUTE_MAP} />
+          </Uu5Elements.ModalBus>
+        </UserProvider>
       </Plus4U5.SpaProvider>
     );
     //@@viewOff:render

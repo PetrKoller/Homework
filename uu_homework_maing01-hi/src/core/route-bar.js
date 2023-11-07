@@ -1,9 +1,11 @@
 //@@viewOn:imports
-import { createVisualComponent, Lsi, useRoute } from "uu5g05";
-import Plus4U5App from "uu_plus4u5g02-app";
+import {createVisualComponent, Lsi, useContext, useRoute} from "uu5g05";
+import Plus4U5App, {RouteHeader} from "uu_plus4u5g02-app";
 
 import Config from "./config/config.js";
 import importLsi from "../lsi/import-lsi.js";
+import {Dropdown} from "uu5g05-elements";
+import UserContext from "../bricks/users/userContext";
 //@@viewOff:imports
 
 //@@viewOn:constants
@@ -41,7 +43,20 @@ const RouteBar = createVisualComponent({
     //@@viewOff:interface
 
     //@@viewOn:render
-    return <Plus4U5App.RouteBar appActionList={appActionList} {...props} />;
+    const userContext = useContext(UserContext);
+    const itemList = userContext.users.map(user => {
+      return {
+        children: user.name,
+        onClick: () => userContext.changeUser(user.id)
+      }
+    })
+    return (
+      <>
+        <Plus4U5App.RouteBar appActionList={appActionList} {...props}>
+          <Dropdown itemList={itemList} label={userContext.user.name}/>
+        </Plus4U5App.RouteBar>
+      </>
+    )
     //@@viewOff:render
   },
 });

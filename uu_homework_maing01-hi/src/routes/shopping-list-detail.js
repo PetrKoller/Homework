@@ -1,11 +1,16 @@
 //@@viewOn:imports
-import {createVisualComponent, Utils, Content, useState, Lsi} from "uu5g05";
+import {createVisualComponent, Utils, Content, useState, Lsi, useContext} from "uu5g05";
 import Config from "./config/config.js";
 import RouteBar from "../core/route-bar";
 import {ActionGroup, Box, Button, Dialog, Input, ListItem, Modal} from "uu5g05-elements";
 import ItemsList from "../bricks/shopping-list/items-list";
 import {shoppingListDetail} from "../fakeData/fakeData"
 import {CancelButton, Form, FormText, SubmitButton} from "uu5g05-forms";
+import ShoppingListActionsBox from "../bricks/shopping-list/shopping-list-actions-box";
+import ShoppingListActions from "../bricks/shopping-list/shopping-list-actions";
+import EditNameModal from "../bricks/shopping-list/edit-name-modal";
+import MembersModal from "../bricks/shopping-list/members/members-modal";
+import UserContext from "../bricks/users/userContext";
 //@@viewOff:imports
 
 //@@viewOn:constants
@@ -39,6 +44,8 @@ const ShoppingListDetail = createVisualComponent({
       const [listDetail, setListDetail] = useState(shoppingListDetail)
       const [displayChecked, setDisplayChecked] = useState(true)
       const [showEditName, setShowEditName] = useState(false)
+      const [showMembers, setShowMembers] = useState(false)
+      const userContext = useContext(UserContext);
       const handleDelete = (id) => {
           setListDetail(prev => {
                 return {
@@ -100,38 +107,24 @@ const ShoppingListDetail = createVisualComponent({
     //@@viewOff:interface
 
     //@@viewOn:render
-
-
+    const memberSection = userContext.isMember(listDetail.members.map(x => x.id)) && (<>
+      <ShoppingListActions
+        shoppingListId={listDetail.id}
+        onDisplayChecked={handleDisplayChecked}
+        displayChecked={displayChecked}
+        onNameEdit={() => setShowEditName(true)}
+        onItemCreate={handleCreate}
+        onMembersClick={() => setShowMembers(true)}
+      />
+      <ItemsList onItemChecked={handleItemChecked} displayChecked={displayChecked} onItemDelete={handleDelete} data={listDetail.items}/>
+    </>)
     return (
         <>
             <RouteBar/>
             <h1 className={Config.Css.css("margin-left: 1rem")}>{listDetail.name}</h1>
-            <div className={Config.Css.css("display: flex; justify-content: right; align-items: center; padding: 1rem")}>
-            <Form onSubmit={handleCreate}>
-                <div className={Config.Css.css("display: flex; justify-content: left; padding: 1rem")}>
-                    <FormText name="newItem" placeholder="New item"/>
-                    <SubmitButton>Add new item</SubmitButton>
-                </div>
-            </Form>
-            <SubmitButton onClick={handleDisplayChecked}>{`Display ${displayChecked ? "unchecked" : "all"}`}</SubmitButton>
-                <SubmitButton className={Config.Css.css("margin-left: 1rem")} onClick={() => setShowEditName(true)}>Edit name</SubmitButton>
-                <SubmitButton className={Config.Css.css("margin-left: 1rem")}>Display members</SubmitButton>
-            </div>
-          <ItemsList onItemChecked={handleItemChecked} displayChecked={displayChecked} onItemDelete={handleDelete} data={listDetail.items}/>
-            <Modal
-            open={showEditName}
-            onClose={() => setShowEditName(false)}
-            actionDirection="horizontal"
-            header={<Lsi lsi={{ en: "Edit name", cs: "Upravit název" }} />}
-            >
-                <Form onSubmit={handleNameEdit}>
-                    <div className={Config.Css.css("padding: 1rem; text-align: right")}>
-                        <FormText name="newName" placeholder="New name" value={listDetail.name}/>
-                        <Button onClick={() => setShowEditName(false)}>Cancel</Button>
-                        <SubmitButton className={Config.Css.css("margin: 1rem")}>Submit</SubmitButton>
-                    </div>
-                </Form>
-            </Modal>
+            {memberSection}
+          <EditNameModal show={showEditName} onClose={() => setShowEditName(false)} onSubmit={handleNameEdit}/>
+          <MembersModal members={listDetail.members} ownerId={listDetail.id} show={showMembers} onClose={() => setShowMembers(false)}/>
         </>
     );
     //@@viewOff:render
