@@ -1,7 +1,7 @@
 //@@viewOn:imports
 import { createVisualComponent, Utils, Content } from "uu5g05";
 import Config from "./config/config.js";
-import {Form, FormText, SubmitButton} from "uu5g05-forms";
+import { Form, FormText, SubmitButton } from "uu5g05-forms";
 //@@viewOff:imports
 
 //@@viewOn:constants
@@ -38,12 +38,14 @@ const NewMember = createVisualComponent({
     //@@viewOff:interface
 
     //@@viewOn:render
-    return <Form onSubmit={props.onSubmit}>
-      <div className={Config.Css.css("display: flex; justify-content: left")}>
-        <FormText name="newMember" placeholder="Member username" required/>
-        <SubmitButton>Add new member</SubmitButton>
-      </div>
-    </Form>
+    return (
+      <Form onSubmit={props.onSubmit}>
+        <div className={Config.Css.css("display: flex; justify-content: left")}>
+          <FormText name="newMember" placeholder="Member username" required />
+          <SubmitButton>Add new member</SubmitButton>
+        </div>
+      </Form>
+    );
     //@@viewOff:render
   },
 });

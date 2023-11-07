@@ -38,9 +38,11 @@ const ShoppingListActionsBox = createVisualComponent({
     //@@viewOff:interface
 
     //@@viewOn:render
-    return <div className={Config.Css.css("display: flex; justify-content: right; align-items: center; padding: 1rem")}>
-      {children}
-    </div>
+    return (
+      <div className={Config.Css.css("display: flex; justify-content: right; align-items: center; padding: 1rem")}>
+        {children}
+      </div>
+    );
     //@@viewOff:render
   },
 });

@@ -3,16 +3,16 @@ const shoppingListDetail = {
   name: "My Shopping List",
   ownerId: 1,
   items: [
-      {
-        id: 1,
-        name: "Milk",
-        completed: false
-      },
+    {
+      id: 1,
+      name: "Milk",
+      completed: false,
+    },
     {
       id: 2,
       name: "Bread",
-      completed: true
-    }
+      completed: true,
+    },
   ],
   members: [
     {
@@ -26,9 +26,9 @@ const shoppingListDetail = {
     {
       id: 3,
       name: "Petr Novak",
-    }
-  ]
-}
+    },
+  ],
+};
 const users = [
   {
     id: 1,
@@ -45,7 +45,7 @@ const users = [
   {
     id: 4,
     name: "Jan Koller Other",
-  }
-]
+  },
+];
 
-export {shoppingListDetail, users};
+export { shoppingListDetail, users };

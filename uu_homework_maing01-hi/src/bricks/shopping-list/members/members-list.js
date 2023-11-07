@@ -1,7 +1,7 @@
 //@@viewOn:imports
 import { createVisualComponent, Utils, Content } from "uu5g05";
 import Config from "./config/config.js";
-import {Grid, ListItem} from "uu5g05-elements";
+import { Grid, ListItem } from "uu5g05-elements";
 import MemberItem from "./member-item";
 //@@viewOff:imports
 
@@ -38,13 +38,21 @@ const MembersList = createVisualComponent({
     //@@viewOn:interface
     //@@viewOff:interface
     //@@viewOn:render
-    return <Grid>
-      {
-        props.data.map(member => {
-          return <MemberItem onItemDelete={props.onItemDelete} key={member.id} ownerId={props.ownerId} member={member} memberIds={props.data.map(x => x.id)}/>
-        })
-      }
-    </Grid>
+    return (
+      <Grid>
+        {props.data.map((member) => {
+          return (
+            <MemberItem
+              onItemDelete={props.onItemDelete}
+              key={member.id}
+              ownerId={props.ownerId}
+              member={member}
+              memberIds={props.data.map((x) => x.id)}
+            />
+          );
+        })}
+      </Grid>
+    );
     //@@viewOff:render
   },
 });

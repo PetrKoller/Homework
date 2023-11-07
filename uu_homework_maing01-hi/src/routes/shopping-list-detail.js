@@ -1,11 +1,11 @@
 //@@viewOn:imports
-import {createVisualComponent, Utils, Content, useState, Lsi, useContext} from "uu5g05";
+import { createVisualComponent, Utils, Content, useState, Lsi, useContext } from "uu5g05";
 import Config from "./config/config.js";
 import RouteBar from "../core/route-bar";
-import {ActionGroup, Box, Button, Dialog, Input, ListItem, Modal} from "uu5g05-elements";
+import { ActionGroup, Box, Button, Dialog, Input, ListItem, Modal } from "uu5g05-elements";
 import ItemsList from "../bricks/shopping-list/items-list";
-import {shoppingListDetail} from "../fakeData/fakeData"
-import {CancelButton, Form, FormText, SubmitButton} from "uu5g05-forms";
+import { shoppingListDetail } from "../fakeData/fakeData";
+import { CancelButton, Form, FormText, SubmitButton } from "uu5g05-forms";
 import ShoppingListActionsBox from "../bricks/shopping-list/shopping-list-actions-box";
 import ShoppingListActions from "../bricks/shopping-list/shopping-list-actions";
 import EditNameModal from "../bricks/shopping-list/edit-name-modal";
@@ -41,91 +41,103 @@ const ShoppingListDetail = createVisualComponent({
 
   render(props) {
     //@@viewOn:private
-      const [listDetail, setListDetail] = useState(shoppingListDetail)
-      const [displayChecked, setDisplayChecked] = useState(true)
-      const [showEditName, setShowEditName] = useState(false)
-      const [showMembers, setShowMembers] = useState(false)
-      const userContext = useContext(UserContext);
-      const handleDelete = (id) => {
-          setListDetail(prev => {
-                return {
-                    ...prev,
-                    items: prev.items.filter(item => item.id !== id)
-                }
-          })
-      }
+    const [listDetail, setListDetail] = useState(shoppingListDetail);
+    const [displayChecked, setDisplayChecked] = useState(true);
+    const [showEditName, setShowEditName] = useState(false);
+    const [showMembers, setShowMembers] = useState(false);
+    const userContext = useContext(UserContext);
+    const handleDelete = (id) => {
+      setListDetail((prev) => {
+        return {
+          ...prev,
+          items: prev.items.filter((item) => item.id !== id),
+        };
+      });
+    };
 
-      const handleDisplayChecked = () => {
-            setDisplayChecked(prev => !prev)
-      }
+    const handleDisplayChecked = () => {
+      setDisplayChecked((prev) => !prev);
+    };
 
-      const handleItemChecked = (id) => {
-          setListDetail(prev => {
+    const handleItemChecked = (id) => {
+      setListDetail((prev) => {
+        return {
+          ...prev,
+          items: prev.items.map((item) => {
+            if (item.id === id) {
               return {
-                  ...prev,
-                  items: prev.items.map(item => {
-                      if(item.id === id){
-                          return {
-                              ...item,
-                              completed: !item.completed
-                          }
-                      }
-                      return item
-                  })
-              }
-          })
-      }
+                ...item,
+                completed: !item.completed,
+              };
+            }
+            return item;
+          }),
+        };
+      });
+    };
 
-      const handleCreate = (e) => {
-          setListDetail(prev => {
-              return {
-                  ...prev,
-                  items: [
-                      ...prev.items,
-                      {
-                          id: Math.floor(Math.random() * 1000000),
-                          completed: false,
-                          name: e.data.value.newItem,
-                      }
-                  ]
-              }
-          })
-      }
+    const handleCreate = (e) => {
+      setListDetail((prev) => {
+        return {
+          ...prev,
+          items: [
+            ...prev.items,
+            {
+              id: Math.floor(Math.random() * 1000000),
+              completed: false,
+              name: e.data.value.newItem,
+            },
+          ],
+        };
+      });
+    };
 
-      const handleNameEdit = (e) => {
-            setListDetail(prev => {
-                return {
-                    ...prev,
-                    name: e.data.value.newName
-                }
-            })
-            setShowEditName(false)
-      }
+    const handleNameEdit = (e) => {
+      setListDetail((prev) => {
+        return {
+          ...prev,
+          name: e.data.value.newName,
+        };
+      });
+      setShowEditName(false);
+    };
     //@@viewOff:private
 
     //@@viewOn:interface
     //@@viewOff:interface
 
     //@@viewOn:render
-    const memberSection = userContext.isMember(listDetail.members.map(x => x.id)) && (<>
-      <ShoppingListActions
-        shoppingListId={listDetail.id}
-        onDisplayChecked={handleDisplayChecked}
-        displayChecked={displayChecked}
-        onNameEdit={() => setShowEditName(true)}
-        onItemCreate={handleCreate}
-        onMembersClick={() => setShowMembers(true)}
-      />
-      <ItemsList onItemChecked={handleItemChecked} displayChecked={displayChecked} onItemDelete={handleDelete} data={listDetail.items}/>
-    </>)
+    const memberSection = userContext.isMember(listDetail.members.map((x) => x.id)) && (
+      <>
+        <ShoppingListActions
+          shoppingListId={listDetail.id}
+          onDisplayChecked={handleDisplayChecked}
+          displayChecked={displayChecked}
+          onNameEdit={() => setShowEditName(true)}
+          onItemCreate={handleCreate}
+          onMembersClick={() => setShowMembers(true)}
+        />
+        <ItemsList
+          onItemChecked={handleItemChecked}
+          displayChecked={displayChecked}
+          onItemDelete={handleDelete}
+          data={listDetail.items}
+        />
+      </>
+    );
     return (
-        <>
-            <RouteBar/>
-            <h1 className={Config.Css.css("margin-left: 1rem")}>{listDetail.name}</h1>
-            {memberSection}
-          <EditNameModal show={showEditName} onClose={() => setShowEditName(false)} onSubmit={handleNameEdit}/>
-          <MembersModal members={listDetail.members} ownerId={listDetail.id} show={showMembers} onClose={() => setShowMembers(false)}/>
-        </>
+      <>
+        <RouteBar />
+        <h1 className={Config.Css.css("margin-left: 1rem")}>{listDetail.name}</h1>
+        {memberSection}
+        <EditNameModal show={showEditName} onClose={() => setShowEditName(false)} onSubmit={handleNameEdit} />
+        <MembersModal
+          members={listDetail.members}
+          ownerId={listDetail.id}
+          show={showMembers}
+          onClose={() => setShowMembers(false)}
+        />
+      </>
     );
     //@@viewOff:render
   },

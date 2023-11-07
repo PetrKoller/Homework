@@ -1,10 +1,10 @@
 //@@viewOn:imports
-import {createVisualComponent, Utils, Content, PropTypes, useState} from "uu5g05";
+import { createVisualComponent, Utils, Content, PropTypes, useState } from "uu5g05";
 import Config from "./config/config.js";
-import {Box, Grid, ListItem} from "uu5g05-elements";
+import { Box, Grid, ListItem } from "uu5g05-elements";
 import RouteBar from "../../core/route-bar";
 import ShoppingListItem from "./shopping-list-item";
-import {Form, FormText, SubmitButton} from "uu5g05-forms";
+import { Form, FormText, SubmitButton } from "uu5g05-forms";
 //@@viewOff:imports
 
 //@@viewOn:constants
@@ -41,18 +41,18 @@ const ItemsList = createVisualComponent({
     //@@viewOff:interface
 
     //@@viewOn:render
-      return (
-            <Grid>
-              {
-                props.data.map(item => {
-                  if(!props.displayChecked && item.completed){
-                      return;
-                  }
-                  return <ShoppingListItem onChecked={props.onItemChecked} key={item.id} onDelete={props.onItemDelete} item={item}/>
-                })
-              }
-            </Grid>
-      )
+    return (
+      <Grid>
+        {props.data.map((item) => {
+          if (!props.displayChecked && item.completed) {
+            return;
+          }
+          return (
+            <ShoppingListItem onChecked={props.onItemChecked} key={item.id} onDelete={props.onItemDelete} item={item} />
+          );
+        })}
+      </Grid>
+    );
     //@@viewOff:render
   },
 });

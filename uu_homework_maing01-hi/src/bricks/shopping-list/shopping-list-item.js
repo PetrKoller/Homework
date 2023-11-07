@@ -1,8 +1,8 @@
 //@@viewOn:imports
-import {createVisualComponent, Utils, Content, useState, PropTypes} from "uu5g05";
+import { createVisualComponent, Utils, Content, useState, PropTypes } from "uu5g05";
 import Config from "./config/config.js";
-import {Grid, ListItem} from "uu5g05-elements";
-import {Form, FormText} from "uu5g05-forms";
+import { Grid, ListItem } from "uu5g05-elements";
+import { Form, FormText } from "uu5g05-forms";
 //@@viewOff:imports
 
 //@@viewOn:constants
@@ -51,9 +51,18 @@ const ShoppingListItem = createVisualComponent({
     //@@viewOff:interface
 
     //@@viewOn:render
-    return <Grid.Item>
-      <ListItem actionList={actions} className={Config.Css.css(`margin: 0.1rem 1rem;padding: 1rem 1rem;${props.item.completed ? "text-decoration: line-through;" : ""}`)}>{props.item.name}</ListItem>
-    </Grid.Item>
+    return (
+      <Grid.Item>
+        <ListItem
+          actionList={actions}
+          className={Config.Css.css(
+            `margin: 0.1rem 1rem;padding: 1rem 1rem;${props.item.completed ? "text-decoration: line-through;" : ""}`
+          )}
+        >
+          {props.item.name}
+        </ListItem>
+      </Grid.Item>
+    );
     //@@viewOff:render
   },
 });

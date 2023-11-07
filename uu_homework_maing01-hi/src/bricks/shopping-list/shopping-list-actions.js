@@ -1,7 +1,7 @@
 //@@viewOn:imports
-import {createVisualComponent, Utils, Content, useContext} from "uu5g05";
+import { createVisualComponent, Utils, Content, useContext } from "uu5g05";
 import Config from "./config/config.js";
-import {Form, FormText, SubmitButton} from "uu5g05-forms";
+import { Form, FormText, SubmitButton } from "uu5g05-forms";
 import ShoppingListActionsBox from "./shopping-list-actions-box";
 import UserContext from "../users/userContext";
 //@@viewOff:imports
@@ -34,7 +34,7 @@ const ShoppingListActions = createVisualComponent({
 
   render(props) {
     //@@viewOn:private
-    const userContext = useContext(UserContext)
+    const userContext = useContext(UserContext);
     //@@viewOff:private
 
     //@@viewOn:interface
@@ -45,16 +45,23 @@ const ShoppingListActions = createVisualComponent({
       <ShoppingListActionsBox>
         <Form onSubmit={props.onItemCreate}>
           <div className={Config.Css.css("display: flex; justify-content: left; padding: 1rem")}>
-            <FormText name="newItem" placeholder="New item"/>
+            <FormText name="newItem" placeholder="New item" />
             <SubmitButton>Add new item</SubmitButton>
-        </div>
+          </div>
         </Form>
-        <SubmitButton onClick={props.onDisplayChecked}>{`Display ${props.displayChecked ? "unchecked" : "all"}`}</SubmitButton>
-        {userContext.isOwner(props.shoppingListId)
-          && <SubmitButton className={Config.Css.css("margin-left: 1rem")} onClick={props.onNameEdit}>Edit name</SubmitButton>}
-        <SubmitButton onClick={props.onMembersClick} className={Config.Css.css("margin-left: 1rem")}>Display members</SubmitButton>
+        <SubmitButton onClick={props.onDisplayChecked}>{`Display ${
+          props.displayChecked ? "unchecked" : "all"
+        }`}</SubmitButton>
+        {userContext.isOwner(props.shoppingListId) && (
+          <SubmitButton className={Config.Css.css("margin-left: 1rem")} onClick={props.onNameEdit}>
+            Edit name
+          </SubmitButton>
+        )}
+        <SubmitButton onClick={props.onMembersClick} className={Config.Css.css("margin-left: 1rem")}>
+          Display members
+        </SubmitButton>
       </ShoppingListActionsBox>
-    )
+    );
     //@@viewOff:render
   },
 });
