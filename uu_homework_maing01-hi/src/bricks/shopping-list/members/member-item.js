@@ -43,7 +43,7 @@ const MemberItem = createVisualComponent({
               onClick: () => props.onItemDelete(props.member.id),
             },
           ]
-        : [];
+        : null;
     //@@viewOff:private
 
     //@@viewOn:interface
