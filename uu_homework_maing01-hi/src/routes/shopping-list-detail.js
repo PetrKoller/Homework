@@ -1,12 +1,9 @@
 //@@viewOn:imports
-import { createVisualComponent, Utils, Content, useState, Lsi, useContext } from "uu5g05";
+import {createVisualComponent, useContext, useRoute, useState} from "uu5g05";
 import Config from "./config/config.js";
 import RouteBar from "../core/route-bar";
-import { ActionGroup, Box, Button, Dialog, Input, ListItem, Modal } from "uu5g05-elements";
 import ItemsList from "../bricks/shopping-list/items-list";
-import { shoppingListDetail } from "../fakeData/fakeData";
-import { CancelButton, Form, FormText, SubmitButton } from "uu5g05-forms";
-import ShoppingListActionsBox from "../bricks/shopping-list/shopping-list-actions-box";
+import {shoppingLists} from "../fakeData/fakeData";
 import ShoppingListActions from "../bricks/shopping-list/shopping-list-actions";
 import EditNameModal from "../bricks/shopping-list/edit-name-modal";
 import MembersModal from "../bricks/shopping-list/members/members-modal";
@@ -41,7 +38,8 @@ const ShoppingListDetail = createVisualComponent({
 
   render(props) {
     //@@viewOn:private
-    const [listDetail, setListDetail] = useState(shoppingListDetail);
+    const [route, setRoute] = useRoute();
+    const [listDetail, setListDetail] = useState(shoppingLists.find((x) => x.id === route.params.id) ?? shoppingLists[0]);
     const [displayChecked, setDisplayChecked] = useState(true);
     const [showEditName, setShowEditName] = useState(false);
     const [showMembers, setShowMembers] = useState(false);
