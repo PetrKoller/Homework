@@ -1,7 +1,7 @@
 //@@viewOn:imports
-import { createVisualComponent, Utils, Content, useContext } from "uu5g05";
+import {createVisualComponent, useContext} from "uu5g05";
 import Config from "./config/config.js";
-import { Form, FormText, SubmitButton } from "uu5g05-forms";
+import {Form, FormText, SubmitButton} from "uu5g05-forms";
 import ShoppingListActionsBox from "./shopping-list-actions-box";
 import UserContext from "../users/userContext";
 //@@viewOff:imports
@@ -45,7 +45,7 @@ const ShoppingListActions = createVisualComponent({
       <ShoppingListActionsBox>
         <Form onSubmit={props.onItemCreate}>
           <div className={Config.Css.css("display: flex; justify-content: left; padding: 1rem")}>
-            <FormText name="newItem" placeholder="New item" />
+            <FormText name="newItem" placeholder="New item" required/>
             <SubmitButton>Add new item</SubmitButton>
           </div>
         </Form>
