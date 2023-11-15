@@ -11,6 +11,14 @@ const Create = {
       this.message = "DtoIn is not valid.";
     }
   },
+
+  ShoppingListAlreadyExists: class extends HomeworkMainUseCaseError {
+    constructor() {
+      super(...arguments);
+      this.code = `${Create.UC_CODE}shoppingListAlreadyExists`;
+      this.message = "Shopping list with same name already exists.";
+    }
+  },
 };
 
 module.exports = {

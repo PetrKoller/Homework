@@ -1,16 +1,20 @@
-"use strict";
+ "use strict";
 const { Validator } = require("uu_appg01_server").Validation;
 const { ValidationHelper } = require("uu_appg01_server").AppServer;
+ const { DaoFactory } = require("uu_appg01_server").ObjectStore;
+ const ObjectId = require("mongodb").ObjectId;
 
 const Errors = require("../api/errors/shopping-list-error");
 const Warnings = require("../api/warnings/shopping-list-warning");
+const EXECUTIVES_PROFILE = "Executives";
 
 class ShoppingListAbl {
   constructor() {
     this.validator = Validator.load();
+    this.dao = DaoFactory.getDao("shoppingList");
   }
 
-  create(awid, dtoIn) {
+  async create(awid, dtoIn, session) {
     let uuAppErrorMap = {};
 
     // validation of dtoIn
@@ -23,26 +27,40 @@ class ShoppingListAbl {
       Errors.Create.InvalidDtoIn
     );
 
-    // prepare and return dtoOut
-    const dtoOut = { ...dtoIn };
-    dtoOut.awid = awid;
-    dtoOut.uuAppErrorMap = uuAppErrorMap;
+    const ownerId = session.getIdentity().getUuIdentity();
 
-    return dtoOut;
+    if(await this.dao.nameExists(awid, dtoIn.name, ownerId)) {
+      throw new Errors.Create.ShoppingListAlreadyExists({uuAppErrorMap}, {name: dtoIn.name});
+    }
+
+    // prepare and return dtoOut
+    dtoIn = {
+      ...dtoIn,
+      awid,
+      ownerId: ownerId,
+      items: [],
+      members: [],
+      archived: false,
+    };
+
+    const shoppingList = await this.dao.create(dtoIn);
+
+    return {...shoppingList, uuAppErrorMap};
   }
 
-  getAll(awid) {
+  async getAll(awid, session, authorizationResult) {
     let uuAppErrorMap = {};
+    const shoppingLists = authorizationResult.getAuthorizedProfiles().includes(EXECUTIVES_PROFILE) ?
+      await this.dao.getAll(awid) :
+      await this.dao.getAllOwnerOrMember(awid, session.getIdentity().getUuIdentity());
 
-    // prepare and return dtoOut
-    const dtoOut = {};
-    dtoOut.awid = awid;
-    dtoOut.uuAppErrorMap = uuAppErrorMap;
-
-    return dtoOut;
+    return {
+      awid,
+      shoppingLists: shoppingLists.itemList,
+      uuAppErrorMap};
   }
 
-  detail(awid, dtoIn) {
+  async detail(awid, dtoIn) {
     let uuAppErrorMap = {};
 
     // validation of dtoIn
@@ -55,15 +73,12 @@ class ShoppingListAbl {
       Errors.Create.InvalidDtoIn
     );
 
-    // prepare and return dtoOut
-    const dtoOut = { ...dtoIn };
-    dtoOut.awid = awid;
-    dtoOut.uuAppErrorMap = uuAppErrorMap;
+    const shoppingList = await this.dao.get(awid, dtoIn.id);
 
-    return dtoOut;
+    return {...shoppingList, uuAppErrorMap};
   }
 
-  update(awid, dtoIn) {
+  async update(awid, dtoIn) {
     let uuAppErrorMap = {};
 
     // validation of dtoIn
@@ -76,15 +91,20 @@ class ShoppingListAbl {
       Errors.Create.InvalidDtoIn
     );
 
+    const itemToUpdate = await this.dao.get(awid, dtoIn.id);
+    const updatedItem = {
+      ...itemToUpdate,
+      ...dtoIn,
+      awid
+      // ownerId: itemToUpdate.ownerId,
+    };
     // prepare and return dtoOut
-    const dtoOut = { ...dtoIn };
-    dtoOut.awid = awid;
-    dtoOut.uuAppErrorMap = uuAppErrorMap;
+    const shoppingList = await this.dao.update(updatedItem);
 
-    return dtoOut;
+    return {...shoppingList, uuAppErrorMap};
   }
 
-  delete(awid, dtoIn) {
+  async delete(awid, dtoIn) {
     let uuAppErrorMap = {};
 
     // validation of dtoIn
@@ -97,15 +117,12 @@ class ShoppingListAbl {
       Errors.Create.InvalidDtoIn
     );
 
-    // prepare and return dtoOut
-    const dtoOut = { ...dtoIn };
-    dtoOut.awid = awid;
-    dtoOut.uuAppErrorMap = uuAppErrorMap;
+    await this.dao.delete(awid, dtoIn.id);
 
-    return dtoOut;
+    return {uuAppErrorMap};
   }
 
-  addItem(awid, dtoIn) {
+  async addItem(awid, dtoIn) {
     let uuAppErrorMap = {};
 
     // validation of dtoIn
@@ -118,15 +135,17 @@ class ShoppingListAbl {
       Errors.Create.InvalidDtoIn
     );
 
-    // prepare and return dtoOut
-    const dtoOut = { ...dtoIn };
-    dtoOut.awid = awid;
-    dtoOut.uuAppErrorMap = uuAppErrorMap;
+    let shoppingList = await this.dao.get(awid, dtoIn.shoppingListId);
+    shoppingList.items.push({
+      name: dtoIn.name,
+      id: new ObjectId().toString(),
+    });
+    shoppingList = await this.dao.update(shoppingList);
 
-    return dtoOut;
+    return {...shoppingList, uuAppErrorMap};
   }
 
-  deleteItem(awid, dtoIn) {
+  async deleteItem(awid, dtoIn) {
     let uuAppErrorMap = {};
 
     // validation of dtoIn
@@ -139,15 +158,12 @@ class ShoppingListAbl {
       Errors.Create.InvalidDtoIn
     );
 
-    // prepare and return dtoOut
-    const dtoOut = { ...dtoIn };
-    dtoOut.awid = awid;
-    dtoOut.uuAppErrorMap = uuAppErrorMap;
+    const shoppingList = await this.dao.deleteItem(awid, dtoIn.shoppingListId, dtoIn.id);
 
-    return dtoOut;
+    return {...shoppingList, uuAppErrorMap};
   }
 
-  addMember(awid, dtoIn) {
+  async addMember(awid, dtoIn) {
     let uuAppErrorMap = {};
 
     // validation of dtoIn
@@ -160,15 +176,14 @@ class ShoppingListAbl {
       Errors.Create.InvalidDtoIn
     );
 
-    // prepare and return dtoOut
-    const dtoOut = { ...dtoIn };
-    dtoOut.awid = awid;
-    dtoOut.uuAppErrorMap = uuAppErrorMap;
+    let shoppingList = await this.dao.get(awid, dtoIn.shoppingListId);
+    shoppingList.members.push(dtoIn.id);
+    shoppingList = await this.dao.update(shoppingList);
 
-    return dtoOut;
+    return {...shoppingList, uuAppErrorMap};
   }
 
-  deleteMember(awid, dtoIn) {
+  async deleteMember(awid, dtoIn) {
     let uuAppErrorMap = {};
 
     // validation of dtoIn
@@ -181,12 +196,9 @@ class ShoppingListAbl {
       Errors.Create.InvalidDtoIn
     );
 
-    // prepare and return dtoOut
-    const dtoOut = { ...dtoIn };
-    dtoOut.awid = awid;
-    dtoOut.uuAppErrorMap = uuAppErrorMap;
+    const shoppingList = await this.dao.deleteMember(awid, dtoIn.shoppingListId, dtoIn.id);
 
-    return dtoOut;
+    return {...shoppingList, uuAppErrorMap};
   }
 }
 

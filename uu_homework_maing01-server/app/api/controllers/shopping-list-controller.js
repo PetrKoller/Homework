@@ -5,19 +5,18 @@ class ShoppingListController {
   create(ucEnv) {
     const awid = ucEnv.getUri().getAwid();
     const dtoIn = ucEnv.parameters;
-    return ShoppingListAbl.create(awid, dtoIn);
+    return ShoppingListAbl.create(awid, dtoIn, ucEnv.getSession());
   }
 
   getAll(ucEnv) {
     const awid = ucEnv.getUri().getAwid();
-    const dtoIn = ucEnv.parameters;
-    return ShoppingListAbl.getAll(awid, dtoIn);
+    return ShoppingListAbl.getAll(awid, ucEnv.getSession(), ucEnv.getAuthorizationResult());
   }
 
   detail(ucEnv) {
     const awid = ucEnv.getUri().getAwid();
     const dtoIn = ucEnv.parameters;
-    return ShoppingListAbl.detail(awid, dtoIn);
+    return ShoppingListAbl.detail(awid, dtoIn, ucEnv.getAuthorizationResult());
   }
 
   delete(ucEnv) {

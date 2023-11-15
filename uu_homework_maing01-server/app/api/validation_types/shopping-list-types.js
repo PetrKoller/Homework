@@ -27,7 +27,6 @@ const shoppingListDeleteItemDtoInType = shape({
 const shoppingListAddMemberDtoInType = shape({
   shoppingListId: string(255).isRequired(),
   id: string(255).isRequired(),
-  name: string(3, 255).isRequired(),
 });
 
 const shoppingListDeleteMemberDtoInType = shape({
