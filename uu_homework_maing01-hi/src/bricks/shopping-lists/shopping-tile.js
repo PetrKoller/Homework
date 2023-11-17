@@ -39,30 +39,29 @@ const ShoppingTile = createVisualComponent({
     const userContext = useContext(UserContext);
 
     let actionList = [
-      props.item.archived ? { icon: "uugds-open-in-modal", children: "Unarchive", collapsed: true, onClick: () => props.onUnarchive(props.item.id) } :
-        { icon: "uugdsstencil-uiaction-archive", children: "Archive", collapsed: true, onClick: () => props.onArchive(props.item.id) },
+      props.item.data.archived ? { icon: "uugds-open-in-modal", children: "Unarchive", collapsed: true, onClick: () => props.onUnarchive(props.item) } :
+        { icon: "uugdsstencil-uiaction-archive", children: "Archive", collapsed: true, onClick: () => props.onArchive(props.item) },
     ]
 
-    if (userContext.isOwner(props.item.ownerId)) {
+    if (userContext.isOwner(props.item.data.ownerId)) {
       actionList.push({ icon: "uugds-delete", children: "Delete", collapsed: true, onClick: () => setOpenDialog(true) });
     }
     //@@viewOff:private
 
     //@@viewOn:interface
     //@@viewOff:interface
-
     //@@viewOn:render
     return (
       <>
       <Tile
       className={Config.Css.css("text-align: center")}
       actionList={actionList}>
-        <div onClick={() => setRoute("shoppingListDetail", {id: props.item.id})} className={Config.Css.css("cursor: pointer; text-align: center")}>
+        <div onClick={() => setRoute("shoppingListDetail", {id: props.item.data.id})} className={Config.Css.css("cursor: pointer; text-align: center")}>
           <img alt={"shoppingCart"} className={Config.Css.css({
             width: "80%",
             height: "80%",
           })} src={shoppingCartImg} />
-          <h2>{props.item.name}</h2>
+          <h2>{props.item.data.name}</h2>
         </div>
     </Tile>
     <Dialog
@@ -94,7 +93,7 @@ const ShoppingTile = createVisualComponent({
         },
         {
           children: <Lsi lsi={{ en: "Delete", cs: "Smazat" }} />,
-          onClick: () => props.onDelete(props.item.id),
+          onClick: () => props.onDelete(props.item),
           colorScheme: "red",
           significance: "highlighted",
         },

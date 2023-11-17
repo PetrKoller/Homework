@@ -54,8 +54,7 @@ class ShoppingListAbl {
       await this.dao.getAllOwnerOrMember(awid, session.getIdentity().getUuIdentity());
 
     return {
-      awid,
-      shoppingLists: shoppingLists.itemList,
+      ...shoppingLists,
       uuAppErrorMap};
   }
 

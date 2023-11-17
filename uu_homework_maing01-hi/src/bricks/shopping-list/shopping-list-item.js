@@ -1,8 +1,7 @@
 //@@viewOn:imports
-import { createVisualComponent, Utils, Content, useState, PropTypes } from "uu5g05";
+import {createVisualComponent, PropTypes} from "uu5g05";
 import Config from "./config/config.js";
-import { Grid, ListItem } from "uu5g05-elements";
-import { Form, FormText } from "uu5g05-forms";
+import {Grid, ListItem} from "uu5g05-elements";
 //@@viewOff:imports
 
 //@@viewOn:constants
@@ -38,11 +37,11 @@ const ShoppingListItem = createVisualComponent({
     const actions = [
       {
         icon: "uugds-delete",
-        onClick: () => props.onDelete(props.item.id),
+        onClick: () => props.onDelete(props.item.id, props.shoppingListId),
       },
       {
         icon: props.item.completed ? "uugds-close" : "uugds-check",
-        onClick: () => props.onChecked(props.item.id),
+        onClick: () => props.onChecked(props.shoppingListId, props.item),
       },
     ];
     //@@viewOff:private
