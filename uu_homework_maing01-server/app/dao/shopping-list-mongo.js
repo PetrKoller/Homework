@@ -21,6 +21,10 @@ class ShoppingListMongo extends UuObjectDao {
     ]});
   }
 
+  async getOwner(awid, id, userId){
+    return await super.findOne({ awid, id, ownerId: userId});
+  }
+
   async nameExists(awid, name, ownerId) {
     return await super.findOne({ awid, name, ownerId });
   }
@@ -60,6 +64,22 @@ class ShoppingListMongo extends UuObjectDao {
 
   async delete(awid, id) {
     await super.deleteOne({ awid, id });
+  }
+
+  async updateItem(awid, id, itemId, completed) {
+    const filter = {
+      awid,
+      id,
+      "items.id": itemId,
+    };
+
+    const update = {
+      $set: {
+        "items.$.completed": completed,
+      },
+    };
+
+    return await super.findOneAndUpdate(filter, update, "NONE");
   }
 
   async deleteItem(awid, id, itemId) {

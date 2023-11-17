@@ -33,7 +33,6 @@ class ShoppingListAbl {
       throw new Errors.Create.ShoppingListAlreadyExists({uuAppErrorMap}, {name: dtoIn.name});
     }
 
-    // prepare and return dtoOut
     dtoIn = {
       ...dtoIn,
       awid,
@@ -60,7 +59,7 @@ class ShoppingListAbl {
       uuAppErrorMap};
   }
 
-  async detail(awid, dtoIn) {
+  async detail(awid, dtoIn, session, authorizationResult) {
     let uuAppErrorMap = {};
 
     // validation of dtoIn
@@ -73,12 +72,20 @@ class ShoppingListAbl {
       Errors.Create.InvalidDtoIn
     );
 
-    const shoppingList = await this.dao.get(awid, dtoIn.id);
+    const userId = session.getIdentity().getUuIdentity();
+
+    const shoppingList = authorizationResult.getAuthorizedProfiles().includes(EXECUTIVES_PROFILE) ?
+      await this.dao.get(awid, dtoIn.id) :
+      await this.dao.getOwnerOrMember(awid, dtoIn.id, userId);
+
+    if(!shoppingList){
+      throw new Errors.Create.ShoppingListDoesNotExist({uuAppErrorMap}, {id: dtoIn.id});
+    }
 
     return {...shoppingList, uuAppErrorMap};
   }
 
-  async update(awid, dtoIn) {
+  async update(awid, dtoIn, session, authorizationResult) {
     let uuAppErrorMap = {};
 
     // validation of dtoIn
@@ -90,21 +97,28 @@ class ShoppingListAbl {
       Warnings.Create.UnsupportedKeys.code,
       Errors.Create.InvalidDtoIn
     );
+    const userId = session.getIdentity().getUuIdentity();
+    const itemToUpdate = authorizationResult.getAuthorizedProfiles().includes(EXECUTIVES_PROFILE) ?
+      await this.dao.get(awid, dtoIn.id) :
+      await this.dao.getOwner(awid, dtoIn.id, userId);
 
-    const itemToUpdate = await this.dao.get(awid, dtoIn.id);
+    if(!itemToUpdate){
+      throw new Errors.Create.ShoppingListDoesNotExist({uuAppErrorMap}, {id: dtoIn.id});
+    }
+
     const updatedItem = {
       ...itemToUpdate,
       ...dtoIn,
-      awid
-      // ownerId: itemToUpdate.ownerId,
+      awid,
+      ownerId: itemToUpdate.ownerId,
     };
-    // prepare and return dtoOut
+
     const shoppingList = await this.dao.update(updatedItem);
 
     return {...shoppingList, uuAppErrorMap};
   }
 
-  async delete(awid, dtoIn) {
+  async delete(awid, dtoIn, session, authorizationResult) {
     let uuAppErrorMap = {};
 
     // validation of dtoIn
@@ -117,12 +131,22 @@ class ShoppingListAbl {
       Errors.Create.InvalidDtoIn
     );
 
+    const userId = session.getIdentity().getUuIdentity();
+
+    const shoppingList = authorizationResult.getAuthorizedProfiles().includes(EXECUTIVES_PROFILE) ?
+      await this.dao.get(awid, dtoIn.id) :
+      await this.dao.getOwner(awid, dtoIn.id, userId);
+
+    if(!shoppingList){
+      throw new Errors.Create.ShoppingListDoesNotExist({uuAppErrorMap}, {id: dtoIn.id});
+    }
+
     await this.dao.delete(awid, dtoIn.id);
 
     return {uuAppErrorMap};
   }
 
-  async addItem(awid, dtoIn) {
+  async addItem(awid, dtoIn, session, authorizationResult) {
     let uuAppErrorMap = {};
 
     // validation of dtoIn
@@ -135,17 +159,53 @@ class ShoppingListAbl {
       Errors.Create.InvalidDtoIn
     );
 
-    let shoppingList = await this.dao.get(awid, dtoIn.shoppingListId);
+    const userId = session.getIdentity().getUuIdentity();
+
+    let shoppingList = authorizationResult.getAuthorizedProfiles().includes(EXECUTIVES_PROFILE) ?
+      await this.dao.get(awid, dtoIn.shoppingListId) :
+      await this.dao.getOwnerOrMember(awid, dtoIn.shoppingListId, userId);
+    if(!shoppingList){
+      throw new Errors.Create.ShoppingListDoesNotExist({uuAppErrorMap}, {id: dtoIn.shoppingListId});
+    }
+
     shoppingList.items.push({
       name: dtoIn.name,
       id: new ObjectId().toString(),
+      completed: false,
     });
     shoppingList = await this.dao.update(shoppingList);
 
     return {...shoppingList, uuAppErrorMap};
   }
 
-  async deleteItem(awid, dtoIn) {
+  async updateItem(awid, dtoIn, session, authorizationResult) {
+    let uuAppErrorMap = {};
+
+    // validation of dtoIn
+    const validationResult = this.validator.validate("shoppingListUpdateItemDtoInType", dtoIn);
+    uuAppErrorMap = ValidationHelper.processValidationResult(
+      dtoIn,
+      validationResult,
+      uuAppErrorMap,
+      Warnings.Create.UnsupportedKeys.code,
+      Errors.Create.InvalidDtoIn
+    );
+
+    const userId = session.getIdentity().getUuIdentity();
+
+    let shoppingList = authorizationResult.getAuthorizedProfiles().includes(EXECUTIVES_PROFILE) ?
+      await this.dao.get(awid, dtoIn.shoppingListId) :
+      await this.dao.getOwnerOrMember(awid, dtoIn.shoppingListId, userId);
+    if(!shoppingList){
+      throw new Errors.Create.ShoppingListDoesNotExist({uuAppErrorMap}, {id: dtoIn.shoppingListId});
+    }
+
+    shoppingList = await this.dao.updateItem(awid, dtoIn.shoppingListId, dtoIn.id, dtoIn.completed);
+
+    return {...shoppingList, uuAppErrorMap};
+  }
+
+  async deleteItem(awid, dtoIn, session, authorizationResult) {
     let uuAppErrorMap = {};
 
     // validation of dtoIn
@@ -158,12 +218,20 @@ class ShoppingListAbl {
       Errors.Create.InvalidDtoIn
     );
 
-    const shoppingList = await this.dao.deleteItem(awid, dtoIn.shoppingListId, dtoIn.id);
+    const userId = session.getIdentity().getUuIdentity();
+    let shoppingList = authorizationResult.getAuthorizedProfiles().includes(EXECUTIVES_PROFILE) ?
+      await this.dao.get(awid, dtoIn.shoppingListId) :
+      await this.dao.getOwnerOrMember(awid, dtoIn.shoppingListId, userId);
+    if(!shoppingList){
+      throw new Errors.Create.ShoppingListDoesNotExist({uuAppErrorMap}, {id: dtoIn.shoppingListId});
+    }
 
-    return {...shoppingList, uuAppErrorMap};
+    const updatedShoppingList = await this.dao.deleteItem(awid, dtoIn.shoppingListId, dtoIn.id);
+
+    return {...updatedShoppingList, uuAppErrorMap};
   }
 
-  async addMember(awid, dtoIn) {
+  async addMember(awid, dtoIn, session, authorizationResult) {
     let uuAppErrorMap = {};
 
     // validation of dtoIn
@@ -176,14 +244,23 @@ class ShoppingListAbl {
       Errors.Create.InvalidDtoIn
     );
 
-    let shoppingList = await this.dao.get(awid, dtoIn.shoppingListId);
+    const userId = session.getIdentity().getUuIdentity();
+
+    let shoppingList = authorizationResult.getAuthorizedProfiles().includes(EXECUTIVES_PROFILE) ?
+      await this.dao.get(awid, dtoIn.shoppingListId) :
+      await this.dao.getOwner(awid, dtoIn.shoppingListId, userId);
+
+    if(!shoppingList){
+      throw new Errors.Create.ShoppingListDoesNotExist({uuAppErrorMap}, {id: dtoIn.shoppingListId});
+    }
+
     shoppingList.members.push(dtoIn.id);
     shoppingList = await this.dao.update(shoppingList);
 
     return {...shoppingList, uuAppErrorMap};
   }
 
-  async deleteMember(awid, dtoIn) {
+  async deleteMember(awid, dtoIn, session, authorizationResult) {
     let uuAppErrorMap = {};
 
     // validation of dtoIn
@@ -196,7 +273,17 @@ class ShoppingListAbl {
       Errors.Create.InvalidDtoIn
     );
 
-    const shoppingList = await this.dao.deleteMember(awid, dtoIn.shoppingListId, dtoIn.id);
+    const userId = session.getIdentity().getUuIdentity();
+
+    let shoppingList = authorizationResult.getAuthorizedProfiles().includes(EXECUTIVES_PROFILE) ?
+      await this.dao.get(awid, dtoIn.shoppingListId) :
+      await this.dao.getOwner(awid, dtoIn.shoppingListId, userId);
+
+    if(!shoppingList){
+      throw new Errors.Create.ShoppingListDoesNotExist({uuAppErrorMap}, {id: dtoIn.shoppingListId});
+    }
+
+    shoppingList = await this.dao.deleteMember(awid, dtoIn.shoppingListId, dtoIn.id);
 
     return {...shoppingList, uuAppErrorMap};
   }

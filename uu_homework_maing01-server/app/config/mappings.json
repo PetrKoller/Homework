@@ -61,6 +61,11 @@
         "httpMethod": "POST",
         "type": "CMD"
       },
+      "shoppingList/updateItem": {
+        "realization": "api/controllers/ShoppingListController.updateItem",
+        "httpMethod": "POST",
+        "type": "CMD"
+      },
       "shoppingList/deleteItem": {
         "realization": "api/controllers/ShoppingListController.deleteItem",
         "httpMethod": "POST",
