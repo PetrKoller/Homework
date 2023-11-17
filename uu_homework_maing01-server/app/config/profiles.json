@@ -54,6 +54,10 @@
         "sysStateList": ["active"],
         "profileList": ["Authenticated", "Executives"]
       },
+      "shoppingList/updateItem": {
+        "sysStateList": ["active"],
+        "profileList": ["Authenticated", "Executives"]
+      },
       "shoppingList/deleteItem": {
         "sysStateList": ["active"],
         "profileList": ["Authenticated", "Executives"]
