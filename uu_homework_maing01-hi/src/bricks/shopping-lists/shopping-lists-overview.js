@@ -1,7 +1,7 @@
 //@@viewOn:imports
 import {createVisualComponent, useContext, useState} from "uu5g05";
 import Config from "./config/config.js";
-import {Grid} from "uu5g05-elements";
+import {Grid, useAlertBus} from "uu5g05-elements";
 import {SubmitButton} from "uu5g05-forms";
 import ShoppingTile from "./shopping-tile";
 import UserContext from "../users/userContext";
@@ -39,24 +39,62 @@ const ShoppingListsOverview = createVisualComponent({
     const [displayArchived, setDisplayArchived] = useState(false);
     const [open, setOpen] = useState(false);
     const userContext = useContext(UserContext);
+    const { addAlert } = useAlertBus();
 
     const handleAddShoppingList = async (e) => {
       const listName = e.data.value.listName;
-      await props.shoppingListDataList.handlerMap.create(listName);
+      try {
+        await props.shoppingListDataList.handlerMap.create(listName);
+      }catch (e){
+        ShoppingListsOverview.logger.error("Error while creating a shopping list", e);
+        addAlert({
+          header: "Shopping list creation failed!",
+          message: e.message,
+          priority: "error",
+        });
+        return;
+      }
       setOpen(false);
     };
 
     const handleArchive = async (shoppingListDataObject) =>{
+     try{
       await shoppingListDataObject.handlerMap.update({...shoppingListDataObject.data, archived: true})
+      }catch (e){
+        ShoppingListsOverview.logger.error("Error while archiving a shopping list", e);
+        addAlert({
+          header: "Shopping list archivation failed!",
+          message: e.message,
+          priority: "error",
+        });
+      }
     }
 
-    const handleUnarchive = (shoppingListDataObject) =>{
-      shoppingListDataObject.handlerMap.update({...shoppingListDataObject.data, archived: false})
+    const handleUnarchive = async (shoppingListDataObject) =>{
+      try{
+        await shoppingListDataObject.handlerMap.update({...shoppingListDataObject.data, archived: false})
+      }catch (e){
+        ShoppingListsOverview.logger.error("Error while unarchiving a shopping list", e);
+        addAlert({
+          header: "Shopping list unarchivation failed!",
+          message: e.message,
+          priority: "error",
+        });
+      }
     }
 
     const handleDelete = (shoppingListDataObject) =>{
+      try {
       shoppingListDataObject.handlerMap.delete();
-    }
+      }catch (e){
+        ShoppingListsOverview.logger.error("Error while deleting a shopping list", e);
+        addAlert({
+          header: "Shopping list deletion failed!",
+          message: e.message,
+          priority: "error",
+        });
+      }
+     }
     //@@viewOff:private
 
     //@@viewOn:interface

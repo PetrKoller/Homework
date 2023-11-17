@@ -1,7 +1,7 @@
 //@@viewOn:imports
 import {createVisualComponent, Lsi, useContext} from "uu5g05";
 import Config from "./config/config.js";
-import {Modal} from "uu5g05-elements";
+import {Modal, useAlertBus} from "uu5g05-elements";
 import MembersList from "./members-list";
 import NewMember from "./new-member";
 import UserContext from "../../users/userContext";
@@ -36,15 +36,33 @@ const MembersModal = createVisualComponent({
   render(props) {
     //@@viewOn:private
     const userContext = useContext(UserContext);
+    const { addAlert } = useAlertBus();
 
-    const handleAddMember = (e) => {
+    const handleAddMember = async (e) => {
       const newMember = e.data.value.newMember;
-      props.detailDataObject.handlerMap.addMember(newMember, props.detailDataObject.data.id);
-
+      try{
+        props.detailDataObject.handlerMap.addMember(newMember, props.detailDataObject.data.id);
+      }catch (e){
+        MembersModal.logger.error("Error while adding a new member", e);
+        addAlert({
+          header: "Adding a member failed!",
+          message: e.message,
+          priority: "error",
+        });
+      }
     };
 
     const handleDelete = (id) => {
-      props.detailDataObject.handlerMap.deleteMember(id, props.detailDataObject.data.id);
+      try{
+        props.detailDataObject.handlerMap.deleteMember(id, props.detailDataObject.data.id);
+      }catch (e){
+        MembersModal.logger.error("Error while deleting a member", e);
+        addAlert({
+          header: "Deleting a member failed!",
+          message: e.message,
+          priority: "error",
+        });
+      }
     };
 
     //@@viewOff:private

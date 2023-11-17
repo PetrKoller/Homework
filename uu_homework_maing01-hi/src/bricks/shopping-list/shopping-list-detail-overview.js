@@ -6,6 +6,7 @@ import ShoppingListActions from "./shopping-list-actions";
 import EditNameModal from "./edit-name-modal";
 import MembersModal from "./members/members-modal";
 import UserContext from "../users/userContext";
+import {useAlertBus} from "uu5g05-elements";
 //@@viewOff:imports
 
 //@@viewOn:constants
@@ -40,24 +41,62 @@ const ShoppingListDetailOverview = createVisualComponent({
     const [showEditName, setShowEditName] = useState(false);
     const [showMembers, setShowMembers] = useState(false);
     const userContext = useContext(UserContext);
+    const { addAlert } = useAlertBus();
+
 
     const handleDisplayChecked = () => {
       setDisplayChecked(!displayChecked);
     }
     const handleDelete = async (id, shoppingListId) => {
-      await props.detailDataObject.handlerMap.deleteItem(id, shoppingListId);
+      try{
+        await props.detailDataObject.handlerMap.deleteItem(id, shoppingListId);
+      }catch (e){
+        ShoppingListDetailOverview.logger.error("Error while deleting a shopping list", e);
+        addAlert({
+          header: "Shopping list deletion failed!",
+          message: e.message,
+          priority: "error",
+        });
+      }
     };
 
     const handleItemChecked = async (shoppingListId, item) => {
-      await props.detailDataObject.handlerMap.updateItem(shoppingListId, item);
+      try{
+        await props.detailDataObject.handlerMap.updateItem(shoppingListId, item);
+      }catch (e){
+        ShoppingListDetailOverview.logger.error("Error while updating a shopping list", e);
+        addAlert({
+          header: "Shopping list update failed!",
+          message: e.message,
+          priority: "error",
+        });
+      }
     };
 
     const handleCreate = async (e) => {
-      await props.detailDataObject.handlerMap.addItem(e.data.value.newItem, props.detailDataObject.data.id);
+      try{
+        await props.detailDataObject.handlerMap.addItem(e.data.value.newItem, props.detailDataObject.data.id);
+      }catch (e){
+        ShoppingListDetailOverview.logger.error("Error while adding an item to a shopping list", e);
+        addAlert({
+          header: "Shopping list item adition failed!",
+          message: e.message,
+          priority: "error",
+        });
+      }
     };
 
     const handleNameEdit = async (e) => {
-      await props.detailDataObject.handlerMap.update({...props.detailDataObject.data, name: e.data.value.newName});
+      try{
+        await props.detailDataObject.handlerMap.update({...props.detailDataObject.data, name: e.data.value.newName});
+      }catch (e){
+        ShoppingListDetailOverview.logger.error("Error while editing a shopping list", e);
+        addAlert({
+          header: "Shopping list edit failed!",
+          message: e.message,
+          priority: "error",
+        });
+      }
       setShowEditName(false);
     };
     //@@viewOff:private
