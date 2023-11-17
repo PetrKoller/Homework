@@ -1,4 +1,4 @@
-import { Environment } from "uu5g05";
+import {Environment} from "uu5g05";
 import Plus4U5 from "uu_plus4u5g02";
 
 // NOTE During frontend development it's possible to redirect uuApp command calls elsewhere, e.g. to production/staging
@@ -39,6 +39,57 @@ const Calls = {
     return await Calls.getWorkspace();
   },
 
+  ShoppingList: {
+    getAll() {
+      const commandUri = Calls.getCommandUri("shoppingList/getAll");
+      return Calls.call("get", commandUri, null);
+    },
+
+    detail(dtoIn) {
+      const commandUri = Calls.getCommandUri("shoppingList/detail");
+      return Calls.call("get", commandUri, dtoIn);
+    },
+
+    create(dtoIn) {
+      const commandUri = Calls.getCommandUri("shoppingList/create");
+      return Calls.call("post", commandUri, dtoIn);
+    },
+
+    update(dtoIn) {
+      const commandUri = Calls.getCommandUri("shoppingList/update");
+      return Calls.call("post", commandUri, dtoIn);
+    },
+
+    delete(dtoIn) {
+      const commandUri = Calls.getCommandUri("shoppingList/delete");
+      return Calls.call("post", commandUri, dtoIn);
+    },
+
+    addItem(dtoIn) {
+      const commandUri = Calls.getCommandUri("shoppingList/addItem");
+      return Calls.call("post", commandUri, dtoIn);
+    },
+
+    updateItem(dtoIn) {
+      const commandUri = Calls.getCommandUri("shoppingList/updateItem");
+      return Calls.call("post", commandUri, dtoIn);
+    },
+
+    deleteItem(dtoIn) {
+      const commandUri = Calls.getCommandUri("shoppingList/deleteItem");
+      return Calls.call("post", commandUri, dtoIn);
+    },
+
+    addMember(dtoIn) {
+      const commandUri = Calls.getCommandUri("shoppingList/addMember");
+      return Calls.call("post", commandUri, dtoIn);
+    },
+
+    deleteMember(dtoIn) {
+      const commandUri = Calls.getCommandUri("shoppingList/deleteMember");
+      return Calls.call("post", commandUri, dtoIn);
+    },
+  },
   getCommandUri(useCase, baseUri = Environment.appBaseUri) {
     return (!baseUri.endsWith("/") ? baseUri + "/" : baseUri) + (useCase.startsWith("/") ? useCase.slice(1) : useCase);
   },

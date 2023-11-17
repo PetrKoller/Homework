@@ -1,9 +1,7 @@
 //@@viewOn:imports
-import { createVisualComponent, Utils, Content, Lsi, useState, useContext } from "uu5g05";
+import {createVisualComponent, Lsi, useContext} from "uu5g05";
 import Config from "./config/config.js";
-import { Button, Grid, ListItem, Modal } from "uu5g05-elements";
-import { Form, FormText, SubmitButton } from "uu5g05-forms";
-import ShoppingListItem from "../shopping-list-item";
+import {Modal, useAlertBus} from "uu5g05-elements";
 import MembersList from "./members-list";
 import NewMember from "./new-member";
 import UserContext from "../../users/userContext";
@@ -37,27 +35,34 @@ const MembersModal = createVisualComponent({
 
   render(props) {
     //@@viewOn:private
-    const [membersList, setMembersList] = useState(props.members);
     const userContext = useContext(UserContext);
+    const { addAlert } = useAlertBus();
 
-    const handleAddMember = (e) => {
+    const handleAddMember = async (e) => {
       const newMember = e.data.value.newMember;
-      setMembersList((prev) => {
-        return [
-          ...prev,
-          {
-            id: Math.floor(Math.random() * 1000000),
-            name: newMember,
-            username: newMember,
-          },
-        ];
-      });
+      try{
+        props.detailDataObject.handlerMap.addMember(newMember, props.detailDataObject.data.id);
+      }catch (e){
+        MembersModal.logger.error("Error while adding a new member", e);
+        addAlert({
+          header: "Adding a member failed!",
+          message: e.message,
+          priority: "error",
+        });
+      }
     };
 
     const handleDelete = (id) => {
-      setMembersList((prev) => {
-        return prev.filter((member) => member.id !== id);
-      });
+      try{
+        props.detailDataObject.handlerMap.deleteMember(id, props.detailDataObject.data.id);
+      }catch (e){
+        MembersModal.logger.error("Error while deleting a member", e);
+        addAlert({
+          header: "Deleting a member failed!",
+          message: e.message,
+          priority: "error",
+        });
+      }
     };
 
     //@@viewOff:private
@@ -72,8 +77,8 @@ const MembersModal = createVisualComponent({
         actionDirection="horizontal"
         header={<Lsi lsi={{ en: "Members", cs: "Členové" }} />}
       >
-        {userContext.isOwner(props.ownerId) && <NewMember onSubmit={handleAddMember} />}
-        <MembersList ownerId={props.ownerId} data={membersList} onItemDelete={handleDelete} />
+        {userContext.isOwner(props.detailDataObject.data.ownerId) && <NewMember onSubmit={handleAddMember} />}
+        <MembersList ownerId={props.detailDataObject.data.ownerId} data={props.detailDataObject.data} onItemDelete={handleDelete} />
       </Modal>
     );
     //@@viewOff:render
